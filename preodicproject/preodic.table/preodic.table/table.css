@@ -1,0 +1,381 @@
+/* =====================================================
+   CÀI ĐẶT CHUNG
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #101722;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header {
+    text-align: center;
+    padding: 18px 10px 12px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: clamp(22px, 2.5vw, 34px);
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 6px 0 0;
+    color: #b8c4d6;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   KHUNG THÔNG TIN NGUYÊN TỐ
+===================================================== */
+
+.information {
+    width: min(1400px, 96vw);
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: stretch;
+    gap: 15px;
+
+    background: #182231;
+    border: 1px solid #34445b;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.selected-element {
+    width: 170px;
+    min-width: 170px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: #202d40;
+    border-radius: 9px;
+    border: 1px solid #3b4d66;
+}
+
+#info-number {
+    font-size: 13px;
+    color: #b8c4d6;
+}
+
+#info-symbol {
+    font-size: 48px;
+    line-height: 1;
+    margin: 4px 0;
+}
+
+#info-name {
+    margin: 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-content h2 {
+    margin: 4px 0 12px;
+    font-size: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.info-grid p {
+    margin: 0;
+    padding: 10px;
+
+    background: #202d40;
+    border-radius: 7px;
+
+    font-size: 13px;
+}
+
+.info-grid b {
+    display: block;
+    color: #aebbd0;
+    margin-bottom: 4px;
+}
+
+.info-grid span {
+    font-size: 15px;
+}
+
+
+/* =====================================================
+   KHU VỰC BẢNG
+===================================================== */
+
+main {
+    width: min(1400px, 96vw);
+    margin: 0 auto;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+
+/* =====================================================
+   BẢNG CHÍNH
+===================================================== */
+
+.periodic-table {
+    display: grid;
+
+    grid-template-columns: repeat(18, minmax(48px, 1fr));
+    grid-template-rows: repeat(7, minmax(76px, 1fr));
+
+    gap: 4px;
+
+    width: 100%;
+    min-width: 900px;
+}
+
+
+/* =====================================================
+   Ô NGUYÊN TỐ
+===================================================== */
+
+.element {
+    position: relative;
+
+    min-width: 0;
+    min-height: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 4px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        filter 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.element:hover {
+    transform: translateY(-5px);
+    filter: brightness(1.18);
+
+    box-shadow:
+        0 7px 14px rgba(0, 0, 0, 0.35);
+}
+
+.atomic-number {
+    position: absolute;
+    top: 4px;
+    left: 5px;
+
+    font-size: 10px;
+    opacity: 0.85;
+}
+
+.symbol {
+    font-size: clamp(17px, 1.7vw, 24px);
+    line-height: 1;
+    margin-top: 3px;
+}
+
+.element-name {
+    max-width: 100%;
+
+    margin-top: 4px;
+
+    font-size: clamp(7px, 0.7vw, 10px);
+    text-align: center;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.atomic-mass {
+    margin-top: 3px;
+
+    font-size: clamp(7px, 0.65vw, 9px);
+    opacity: 0.9;
+}
+
+
+/* =====================================================
+   MÀU CÁC NHÓM NGUYÊN TỐ
+===================================================== */
+
+/* Kim loại kiềm */
+.alkali {
+    background: #8b5222;
+}
+
+/* Kim loại kiềm thổ */
+.alkaline {
+    background: #76502a;
+}
+
+/* Kim loại chuyển tiếp */
+.transition {
+    background: #286198;
+}
+
+/* Kim loại */
+.post-transition {
+    background: #356f98;
+}
+
+/* Á kim */
+.metalloid {
+    background: #477a72;
+}
+
+/* Phi kim */
+.nonmetal {
+    background: #277b68;
+}
+
+/* Halogen */
+.halogen {
+    background: #72549b;
+}
+
+/* Khí hiếm */
+.noble {
+    background: #774d91;
+}
+
+/* Lantanide */
+.lanthanide {
+    background: #914d7e;
+}
+
+/* Actinide */
+.actinide {
+    background: #84496e;
+}
+
+
+/* =====================================================
+   F-BLOCK
+===================================================== */
+
+.f-block {
+    display: grid;
+
+    grid-template-columns: repeat(14, minmax(48px, 1fr));
+
+    gap: 4px;
+
+    width: calc((100% - 13 * 4px) / 14 * 14 + 13 * 4px);
+    min-width: 900px;
+
+    margin-top: 12px;
+    margin-left: 0;
+}
+
+.f-block .element {
+    min-height: 76px;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+    text-align: center;
+
+    padding: 20px 10px;
+
+    color: #8795aa;
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   MÀN HÌNH NHỎ
+===================================================== */
+
+@media (max-width: 900px) {
+
+    .information {
+        flex-direction: column;
+    }
+
+    .selected-element {
+        width: 100%;
+        min-width: 0;
+        min-height: 130px;
+    }
+
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .periodic-table,
+    .f-block {
+        min-width: 850px;
+    }
+}
+
+
+/* =====================================================
+   MÀN HÌNH RẤT NHỎ
+===================================================== */
+
+@media (max-width: 500px) {
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        padding-top: 12px;
+    }
+}
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: 0.3s ease;
+}
+
+.back-button:hover {
+    transform: translateX(-5px);
+}

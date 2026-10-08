@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Periodic</title>
+
+    <!-- Kết nối CSS -->
+    <link rel="stylesheet" href="preodic.css">
+</head>
+
+<body>
+    <!-- ===== PHẦN ĐẦU ===== -->
+    <section class="hero">
+
+        <div class="hero-content">
+            <p class="small-title">WELCOME TO</p>
+
+            <h1>Periodic</h1>
+
+            <p class="subtitle">
+                Khám phá - Học hỏi - Phát triển
+            </p>
+
+            <button class="start-button" onclick="scrollToChoices()">
+                ↓ &nbsp; Bắt đầu
+            </button>
+        </div>
+
+    </section>
+
+
+    <!-- ===== PHẦN CHỌN ===== -->
+    <section class="choices" id="choices">
+
+        <p class="section-title">CHỌN MỤC</p>
+
+        <h2>Bạn muốn làm gì?</h2>
+
+        <p class="description">
+            Chọn một tùy chọn bên dưới để bắt đầu.
+        </p>
+
+
+        <div class="card-container">
+
+            <div class="card" onclick="window.location.href='../preodic.table/table.html'">
+
+                <div class="icon">
+                    &lt;/&gt;
+                </div>
+
+                <h3>Bảng tuần hoàn hoá học</h3>
+
+                <p>
+                    Khám phá và tìm hiểu 
+                    các nguyên tố hoá học.
+                </p>
+
+                <span class="arrow">→</span>
+
+            </div>
+            <!-- Ô 1 -->
+            <div class="card" onclick="window.location.href='../AcidBase/acidbase.html'">
+
+                <div class="icon purple">
+                    ⚛
+                </div>
+
+                <h3>Quy luật biến đổi tuần hoàn</h3>
+
+                <p>
+                    chưa xong
+                    .
+                </p>
+
+                <span class="arrow">→</span>
+
+            </div>
+
+            <!-- Ô 2 -->
+            
+            <!-- Ô 3 -->
+            <div class="card" onclick="window.location.href='../extratest/test.html'">
+
+                <div class="icon purple">
+                    📝
+                </div>
+
+                <h3>Bài tập vận dụng</h3>
+
+                <p>
+                    Luyện tập và kiểm tra kiến thức
+                </p>
+
+                <span class="arrow">→</span>
+
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>Periodic | 1 điểm hôm nay, 10 điểm ngày mai</p>
+    </footer>
+
+
+    <!-- Kết nối JavaScript -->
+    <script src="preodic.js"></script>
+
+</body>
+</html>

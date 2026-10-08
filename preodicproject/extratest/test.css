@@ -1,0 +1,570 @@
+/* =========================================
+   CƠ BẢN
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #f5f7ff;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #17294a 0%,
+            #0b1220 45%,
+            #060a12 100%
+        );
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.header {
+    width: 100%;
+
+    padding: 25px 7%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 25px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.back-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 10px 18px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    color: #dce7ff;
+
+    background: rgba(255,255,255,0.05);
+
+    transition: 0.3s ease;
+}
+
+.back-button:hover {
+    transform: translateX(-5px);
+
+    background: rgba(255,255,255,0.1);
+}
+
+.header-title span {
+    color: #7fb4ff;
+
+    font-size: 13px;
+
+    letter-spacing: 3px;
+}
+
+.header-title h1 {
+    margin: 6px 0 0;
+
+    font-size: 27px;
+}
+
+
+/* =========================================
+   GIỚI THIỆU
+========================================= */
+
+.intro {
+    width: min(1000px, 90%);
+
+    margin: 45px auto 25px;
+
+    text-align: center;
+}
+
+.intro h2 {
+    margin: 0 0 10px;
+
+    font-size: 32px;
+}
+
+.intro p {
+    color: #aebbd2;
+
+    font-size: 16px;
+}
+
+
+/* =========================================
+   BÀI KIỂM TRA
+========================================= */
+
+.quiz-section {
+    width: min(1000px, 90%);
+
+    margin: 35px auto 70px;
+}
+
+.question-card {
+    margin-bottom: 25px;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    background: rgba(18, 29, 49, 0.9);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.2);
+}
+
+.question-title {
+    margin: 0 0 20px;
+
+    color: #ffffff;
+
+    font-size: 19px;
+
+    line-height: 1.5;
+}
+
+.loading {
+    text-align: center;
+
+    color: #aebbd2;
+}
+
+
+/* =========================================
+   ABCD
+========================================= */
+
+.answer-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.answer-option {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    width: 100%;
+
+    min-height: 55px;
+
+    padding: 14px 17px;
+
+    border-radius: 13px;
+
+    border: 1px solid rgba(255,255,255,0.09);
+
+    background: rgba(255,255,255,0.035);
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.answer-option:hover {
+    background: rgba(255,255,255,0.075);
+
+    border-color: rgba(100,160,255,0.4);
+}
+
+.answer-option input {
+    display: none;
+}
+
+.answer-letter {
+    width: 34px;
+
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: rgba(255,255,255,0.08);
+
+    font-weight: bold;
+
+    color: #aebbd2;
+}
+
+.answer-option:has(input:checked) {
+    border-color: #438cff;
+
+    background: rgba(53,128,255,0.16);
+}
+
+.answer-option:has(input:checked) .answer-letter {
+    background: #287cff;
+
+    color: white;
+}
+
+
+/* =========================================
+   ĐÚNG / SAI
+========================================= */
+
+.tf-container {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.tf-row {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        120px
+        120px;
+
+    align-items: center;
+
+    min-height: 58px;
+
+    padding: 7px 12px;
+
+    border-radius: 13px;
+
+    background: rgba(255,255,255,0.035);
+
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.tf-statement {
+    padding: 8px 10px;
+
+    line-height: 1.4;
+}
+
+.tf-choice {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    height: 100%;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.tf-choice:hover {
+    background: rgba(255,255,255,0.07);
+}
+
+.tf-choice input {
+    display: none;
+}
+
+.tf-choice span {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #aebbd2;
+}
+
+.tf-choice span::before {
+    content: "";
+
+    width: 17px;
+
+    height: 17px;
+
+    border-radius: 50%;
+
+    border: 2px solid #68758b;
+}
+
+.tf-choice:has(input:checked) {
+    background: rgba(53,128,255,0.15);
+}
+
+.tf-choice:has(input:checked) span {
+    color: #ffffff;
+}
+
+.tf-choice:has(input:checked) span::before {
+    border-color: #438cff;
+
+    background:
+        radial-gradient(
+            circle,
+            #438cff 45%,
+            transparent 50%
+        );
+}
+
+
+/* =========================================
+   NÚT NỘP
+========================================= */
+
+.submit-button {
+    display: block;
+
+    margin: 35px auto 0;
+
+    min-width: 180px;
+
+    padding: 14px 28px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    color: white;
+
+    background: #287cff;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+
+    background: #1769e8;
+}
+
+
+/* =========================================
+   KẾT QUẢ
+========================================= */
+
+.result-section {
+    display: none;
+
+    width: min(1000px, 90%);
+
+    margin: 0 auto 70px;
+
+    padding: 30px;
+
+    border-radius: 22px;
+
+    background: rgba(18,29,49,0.95);
+
+    border: 1px solid rgba(255,255,255,0.09);
+}
+
+.result-section h2 {
+    margin-top: 0;
+
+    text-align: center;
+
+    font-size: 27px;
+}
+
+.score {
+    margin: 20px 0 30px;
+
+    text-align: center;
+
+    font-size: 32px;
+
+    font-weight: bold;
+
+    color: #70a9ff;
+}
+
+
+/* =========================================
+   CÂU SAI
+========================================= */
+
+.wrong-question {
+    margin-top: 20px;
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+    background: rgba(255,255,255,0.035);
+
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.wrong-question h3 {
+    margin-top: 0;
+
+    color: #ffffff;
+
+    line-height: 1.5;
+}
+
+.result-line {
+    margin: 8px 0;
+
+    color: #bac7dc;
+}
+
+.user-answer {
+    color: #ff9a9a;
+}
+
+.correct-answer {
+    color: #7ed6a0;
+}
+
+
+/* =========================================
+   KẾT QUẢ ĐÚNG / SAI
+========================================= */
+
+.tf-result {
+    margin-top: 15px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.tf-result-row {
+    display: grid;
+
+    grid-template-columns:
+        45px
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    align-items: center;
+
+    min-height: 45px;
+
+    padding: 8px 12px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.04);
+}
+
+.tf-result-row.correct {
+    border-left: 4px solid #55c987;
+}
+
+.tf-result-row.wrong {
+    border-left: 4px solid #ff7373;
+}
+
+.tf-result-letter {
+    font-weight: bold;
+
+    color: #ffffff;
+}
+
+.tf-result-user {
+    color: #ff9a9a;
+}
+
+.tf-result-correct {
+    color: #7ed6a0;
+}
+
+
+/* =========================================
+   KHÓA SAU KHI NỘP
+========================================= */
+
+.quiz-locked .answer-option,
+.quiz-locked .tf-choice {
+    cursor: default;
+}
+
+.quiz-locked .answer-option:hover {
+    background: rgba(255,255,255,0.035);
+
+    border-color: rgba(255,255,255,0.09);
+}
+
+.quiz-locked .tf-choice:hover {
+    background: transparent;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .header {
+        padding: 20px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .tf-row {
+        grid-template-columns:
+            minmax(0, 1fr)
+            80px
+            80px;
+    }
+
+    .tf-statement {
+        font-size: 14px;
+    }
+
+    .tf-choice span {
+        font-size: 13px;
+    }
+
+    .result-section,
+    .quiz-section,
+    .intro {
+        width: 94%;
+    }
+}
