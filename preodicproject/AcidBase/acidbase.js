@@ -252,10 +252,10 @@ elements.forEach(([symbol, row, column]) => {
                 <b>${symbol}</b>
 
                 <p>
-                    Nhóm B không có quy luật axit – bazơ đơn giản
+                    Nhóm B không có quy luật acid – base đơn giản
                     như nhóm A.
                     <br>
-                    Tính axit – bazơ phụ thuộc nhiều vào
+                    Tính acid – base phụ thuộc nhiều vào
                     <b>số oxi hóa</b>.
                 </p>
             `;
@@ -281,13 +281,13 @@ elements.forEach(([symbol, row, column]) => {
                 <b>${symbol}</b>
 
                 <p>
-                    ← Tính bazơ tăng dần
+                    ← Tính base tăng dần
                     &nbsp;&nbsp;&nbsp;
-                    → Tính axit tăng dần
+                    → Tính acid tăng dần
                     <br>
-                    ↑ Tính axit tăng dần
+                    ↑ Tính acid tăng dần
                     &nbsp;&nbsp;&nbsp;
-                    ↓ Tính bazơ tăng dần
+                    ↓ Tính base tăng dần
                 </p>
             `;
         }
