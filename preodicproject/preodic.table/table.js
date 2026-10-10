@@ -1,7 +1,7 @@
 const elements = [
-    {n:1, symbol:"H", name:"Hydrogen", mass:"1.008", group:IA, period:1, category:"Phi kim"},
-    {n:2, symbol:"He", name:"Helium", mass:"4.003", group:IIA, period:1, category:"Khí hiếm"},
-    {n:3, symbol:"Li", name:"Lithium", mass:"6.94", group:IA, period:2, category:"Kim loại kiềm"},
+    {n:1, symbol:"H", name:"Hydrogen", mass:"1.008", group:1, period:1, category:"Phi kim"},
+    {n:2, symbol:"He", name:"Helium", mass:"4.003", group:18, period:1, category:"Khí hiếm"},
+    {n:3, symbol:"Li", name:"Lithium", mass:"6.94", group:1, period:2, category:"Kim loại kiềm"},
     {n:4, symbol:"Be", name:"Beryllium", mass:"9.012", group:2, period:2, category:"Kim loại kiềm thổ"},
     {n:5, symbol:"B", name:"Boron", mass:"10.81", group:13, period:2, category:"Á kim"},
     {n:6, symbol:"C", name:"Carbon", mass:"12.011", group:14, period:2, category:"Phi kim"},
@@ -175,8 +175,29 @@ function showInformation(element) {
     document.getElementById("info-mass").textContent =
         element.mass;
 
+    const groupNames = {
+        1: "IA",
+        2: "IIA",
+        3: "IIIB",
+        4: "IVB",
+        5: "VB",
+        6: "VIB",
+        7: "VIIB",
+        8: "VIIIB",
+        9: "VIIIB",
+        10: "VIIIB",
+        11: "IB",
+        12: "IIB",
+        13: "IIIA",
+        14: "IVA",
+        15: "VA",
+        16: "VIA",
+        17: "VIIA",
+        18: "VIIIA"
+    };
+
     document.getElementById("info-group").textContent =
-        element.group ?? "—";
+        groupNames[element.group] ?? "—";
 
     document.getElementById("info-period").textContent =
         element.period;
