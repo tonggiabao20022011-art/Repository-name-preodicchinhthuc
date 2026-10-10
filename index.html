@@ -2,266 +2,266 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đăng nhập | Periodic</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic | Đăng nhập</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      font-family: "Segoe UI", Arial, sans-serif;
-      color: #eaf4ff;
-      background:
-        radial-gradient(circle at 15% 15%, #12365c 0, transparent 35%),
-        radial-gradient(circle at 85% 85%, #092e45 0, transparent 35%),
-        #070b16;
-    }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #eef6ff;
+            background:
+                radial-gradient(circle at top left, #123b65, transparent 40%),
+                radial-gradient(circle at bottom right, #063b4d, transparent 35%),
+                #070b16;
+        }
 
-    .container {
-      width: 100%;
-      max-width: 440px;
-      padding: 35px;
-      border: 1px solid #23476a;
-      border-radius: 22px;
-      background: rgba(13, 23, 42, 0.96);
-      box-shadow: 0 20px 70px #0008;
-    }
+        .card {
+            width: 100%;
+            max-width: 440px;
+            padding: 35px;
+            border: 1px solid #234b70;
+            border-radius: 22px;
+            background: rgba(14, 24, 43, 0.96);
+            box-shadow: 0 20px 70px #0008;
+        }
 
-    .logo {
-      color: #56c5ff;
-      font-size: 13px;
-      font-weight: bold;
-      letter-spacing: 5px;
-      margin-bottom: 15px;
-    }
+        .logo {
+            color: #55c5ff;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 18px;
+        }
 
-    h1 {
-      font-size: 29px;
-      margin-bottom: 10px;
-    }
+        h1 {
+            margin: 0 0 12px;
+            font-size: 29px;
+        }
 
-    .description {
-      color: #9eafc8;
-      line-height: 1.6;
-      margin-bottom: 25px;
-    }
+        .description {
+            color: #a2b4cc;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
 
-    label {
-      display: block;
-      margin: 18px 0 8px;
-      font-size: 14px;
-    }
+        label {
+            display: block;
+            margin: 18px 0 8px;
+            font-size: 14px;
+        }
 
-    input {
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      border: 1px solid #2b405c;
-      outline: none;
-      background: #080f1f;
-      color: white;
-      font-size: 15px;
-    }
+        input {
+            width: 100%;
+            padding: 14px;
+            color: white;
+            background: #080f1e;
+            border: 1px solid #2c4562;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+        }
 
-    input:focus {
-      border-color: #56c5ff;
-      box-shadow: 0 0 0 3px #56c5ff20;
-    }
+        input:focus {
+            border-color: #55c5ff;
+            box-shadow: 0 0 0 3px #55c5ff20;
+        }
 
-    button {
-      width: 100%;
-      margin-top: 25px;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(100deg, #4bb8ff, #80e5ff);
-      color: #06111d;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 10px;
+            color: #06111e;
+            background: linear-gradient(100deg, #4bb8ff, #83e7ff);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-    button:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.1);
-    }
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
 
-    .note {
-      color: #7f91ab;
-      font-size: 12px;
-      line-height: 1.5;
-      text-align: center;
-      margin-top: 20px;
-    }
+        .note {
+            color: #8295ae;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
 
-    #welcome {
-      display: none;
-      text-align: center;
-    }
+        #welcome {
+            display: none;
+            text-align: center;
+        }
 
-    .success-icon {
-      width: 70px;
-      height: 70px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 22px;
-      border-radius: 50%;
-      border: 1px solid #35d6a0;
-      background: #35d6a018;
-      color: #53edb9;
-      font-size: 38px;
-    }
+        .success-icon {
+            width: 72px;
+            height: 72px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 22px;
+            border: 1px solid #36d8a0;
+            border-radius: 50%;
+            background: #36d8a018;
+            color: #62f0bd;
+            font-size: 38px;
+        }
 
-    #welcome h1 {
-      font-size: 26px;
-      color: #70e8bd;
-    }
+        #welcome h1 {
+            color: #62f0bd;
+            font-size: 26px;
+        }
 
-    #welcome p {
-      margin-top: 15px;
-      color: #a7b8ce;
-      line-height: 1.7;
-    }
+        #welcome p {
+            color: #a2b4cc;
+            line-height: 1.8;
+        }
 
-    .progress {
-      height: 5px;
-      background: #26364b;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 25px;
-    }
+        .progress {
+            height: 5px;
+            margin-top: 25px;
+            border-radius: 10px;
+            background: #26364b;
+            overflow: hidden;
+        }
 
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: #56c5ff;
-    }
+        #progressBar {
+            width: 0;
+            height: 100%;
+            background: #55c5ff;
+        }
 
-    .progress-bar.run {
-      animation: progress 5s linear forwards;
-    }
+        #progressBar.run {
+            animation: loading 5s linear forwards;
+        }
 
-    @keyframes progress {
-      to { width: 100%; }
-    }
+        @keyframes loading {
+            to {
+                width: 100%;
+            }
+        }
 
-    @media (max-width: 480px) {
-      .container { padding: 25px 20px; }
-      h1 { font-size: 25px; }
-    }
-  </style>
+        @media (max-width: 480px) {
+            .card {
+                padding: 25px 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <main class="container">
 
-    <section id="login">
-      <div class="logo">PERIODIC</div>
+    <main class="card">
 
-      <h1>Chào mừng bạn</h1>
-      <p class="description">
-        Điền thông tin bên dưới để tiếp tục đến website học tập Periodic.
-      </p>
+        <section id="login">
+            <div class="logo">PERIODIC</div>
 
-      <form id="loginForm">
-        <label for="username">Tên người dùng</label>
-        <input
-          id="username"
-          type="text"
-          maxlength="40"
-          placeholder="Nhập tên của bạn"
-          autocomplete="off"
-          required
-        >
+            <h1>Chào mừng bạn!</h1>
 
-        <label for="email">Email (không bắt buộc)</label>
-        <input
-          id="email"
-          type="email"
-          placeholder="example@email.com"
-          autocomplete="off"
-        >
+            <p class="description">
+                Nhập tên của bạn để bắt đầu khám phá thế giới hóa học cùng Periodic.
+            </p>
 
-        <button type="submit">Đăng nhập</button>
-      </form>
+            <form id="loginForm">
+                <label for="username">Tên người dùng</label>
 
-      <p class="note">
-        Trang minh họa không tạo tài khoản và không lưu thông tin của bạn.
-      </p>
-    </section>
+                <input
+                    id="username"
+                    type="text"
+                    maxlength="40"
+                    placeholder="Nhập tên của bạn"
+                    autocomplete="off"
+                    required
+                >
 
-    <section id="welcome" aria-live="polite">
-      <div class="success-icon">✓</div>
+                <button type="submit">Đăng nhập →</button>
+            </form>
 
-      <div class="logo">PERIODIC</div>
+            <p class="note">
+                Thông tin chỉ được dùng để hiển thị lời chào,
+                không được lưu lại.
+            </p>
+        </section>
 
-      <h1>Đăng nhập thành công!</h1>
+        <section id="welcome" aria-live="polite">
+            <div class="success-icon">✓</div>
 
-      <p id="welcomeMessage"></p>
+            <div class="logo">PERIODIC</div>
 
-      <p>
-        Đang chuyển đến trang chính sau
-        <strong id="seconds">5</strong> giây...
-      </p>
+            <h1>Đăng nhập thành công!</h1>
 
-      <div class="progress">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-    </section>
+            <p id="welcomeMessage"></p>
 
-  </main>
+            <p>
+                Đang chuyển đến trang chính sau
+                <strong id="countdown">5</strong> giây...
+            </p>
 
-  <script>
-    const form = document.getElementById("loginForm");
-    const login = document.getElementById("login");
-    const welcome = document.getElementById("welcome");
-    const welcomeMessage = document.getElementById("welcomeMessage");
-    const secondsDisplay = document.getElementById("seconds");
-    const progressBar = document.getElementById("progressBar");
+            <div class="progress">
+                <div id="progressBar"></div>
+            </div>
+        </section>
 
-    form.addEventListener("submit", function(event) {
-      event.preventDefault();
+    </main>
 
-      const username = document.getElementById("username").value.trim();
+    <script>
+        const form = document.getElementById("loginForm");
+        const login = document.getElementById("login");
+        const welcome = document.getElementById("welcome");
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        const countdown = document.getElementById("countdown");
+        const progressBar = document.getElementById("progressBar");
 
-      if (!username) return;
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
 
-      // Chỉ sử dụng thông tin trong bộ nhớ tạm thời của trang.
-      // Không lưu vào localStorage, sessionStorage hay máy chủ.
-      login.style.display = "none";
-      welcome.style.display = "block";
+            const username = document
+                .getElementById("username")
+                .value.trim();
 
-      welcomeMessage.textContent =
-        "Xin chào " + username +
-        "! Chúc bạn có trải nghiệm học tập hiệu quả cùng Periodic.";
+            if (!username) return;
 
-      progressBar.classList.add("run");
+            // Không lưu thông tin vào bộ nhớ trình duyệt.
+            login.style.display = "none";
+            welcome.style.display = "block";
 
-      let seconds = 5;
-      const timer = setInterval(function() {
-        seconds--;
-        secondsDisplay.textContent = seconds;
+            welcomeMessage.textContent =
+                "Xin chào " + username +
+                "! Chúc bạn học tập hiệu quả cùng Periodic.";
 
-        if (seconds <= 0) {
-          clearInterval(timer);
+            progressBar.classList.add("run");
 
-          // login.html nằm cùng cấp với thư mục preodic.website
-          window.location.href = "./preodic.website/preodic.html";
-        }
-      }, 1000);
-    });
-  </script>
+            let seconds = 5;
+
+            const timer = setInterval(function() {
+                seconds--;
+                countdown.textContent = seconds;
+
+                if (seconds <= 0) {
+                    clearInterval(timer);
+
+                    window.location.href =
+                        "./preodicproject/preodic.website/preodic.html";
+                }
+            }, 1000);
+        });
+    </script>
+
 </body>
 </html>
 ```
