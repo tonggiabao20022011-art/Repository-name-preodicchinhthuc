@@ -1,361 +1,164 @@
-```javascript
-// ================================
-// CẤU HÌNH
-// ================================
-
-const WORD_FILE = "./bai.docx";
-
-let questions = [];
-let submitted = false;
-
-
-// ================================
-// LẤY CÁC PHẦN TỬ HTML
-// ================================
-
-const quiz = document.getElementById("quiz");
-const submitButton = document.getElementById("submit-button");
-const resultSection = document.getElementById("result-section");
-const scoreElement = document.getElementById("score");
-const wrongAnswers = document.getElementById("wrong-answers");
-
-
-// ================================
-// ĐỌC FILE WORD
-// ================================
-
+// Đọc và phân tích câu hỏi từ file bai.docx
 async function loadWordFile() {
-    try {
-        quiz.innerHTML = `
-            <div class="question-card loading">
-                Đang tải câu hỏi...
-            </div>
-        `;
+    const status = document.getElementById("status");
 
-        console.log("Bắt đầu tải:", WORD_FILE);
+    try {
+        if (status) status.textContent = "Đang tải câu hỏi...";
 
         if (typeof mammoth === "undefined") {
-            throw new Error("Không tìm thấy mammoth.browser.min.js");
+            throw new Error("Chưa tải được thư viện Mammoth.");
         }
 
-        const response = await fetch(WORD_FILE);
+        const response = await fetch("./bai.docx", {
+            cache: "no-cache"
+        });
 
         if (!response.ok) {
             throw new Error(
-                `Không tải được ${WORD_FILE}. Mã lỗi: ${response.status}`
+                `Không đọc được bai.docx. Mã lỗi: ${response.status}`
             );
         }
 
         const arrayBuffer = await response.arrayBuffer();
 
+        if (arrayBuffer.byteLength === 0) {
+            throw new Error("File bai.docx đang trống.");
+        }
+
         const result = await mammoth.extractRawText({
             arrayBuffer: arrayBuffer
         });
 
-        console.log("Nội dung Word:", result.value);
+        const text = result.value.trim();
 
-        questions = parseQuestions(result.value);
+        if (!text) {
+            throw new Error("Không tìm thấy nội dung trong file Word.");
+        }
 
-        console.log("Số câu hỏi:", questions.length);
+        questions = parseQuestions(text);
 
-        if (questions.length === 0) {
-            quiz.innerHTML = `
-                <div class="question-card">
-                    <h3>Không tìm thấy câu hỏi trắc nghiệm</h3>
-                    <p>Kiểm tra định dạng trong file bai.docx.</p>
-                </div>
-            `;
-
-            submitButton.style.display = "none";
-            return;
+        if (!questions || questions.length === 0) {
+            throw new Error(
+                "Không nhận diện được câu hỏi. Hãy kiểm tra định dạng file Word."
+            );
         }
 
         renderQuiz();
 
+        if (status) {
+            status.textContent = `Đã tải ${questions.length} câu hỏi.`;
+        }
+
     } catch (error) {
-        console.error("LỖI:", error);
+        console.error("Lỗi đọc file Word:", error);
 
-        quiz.innerHTML = `
-            <div class="question-card">
-                <h3>Không thể tải bài tập</h3>
-                <p>${error.message}</p>
-            </div>
-        `;
-
-        submitButton.style.display = "none";
+        if (status) {
+            status.textContent = "Lỗi tải câu hỏi: " + error.message;
+        }
     }
 }
 
 
-// ================================
-// PHÂN TÍCH CÂU HỎI TRẮC NGHIỆM
-// Định dạng Word:
-//
-// Câu 1: Nội dung câu hỏi
-// A. Phương án A
-// B. Phương án B
-// C. Phương án C
-// D. Phương án D
-// Đáp án: A
-// ================================
-
-function parseQuestions(text) {
-    text = text
+// Phân tích nội dung Word thành danh sách câu hỏi
+function parseQuestions(rawText) {
+    const lines = rawText
+        .replace(/\r\n?/g, "\n")
         .replace(/\u00A0/g, " ")
-        .replace(/\r\n/g, "\n")
-        .replace(/\r/g, "\n");
-
-    const lines = text
         .split("\n")
         .map(line => line.trim())
-        .filter(line => line !== "");
+        .filter(line => line.length > 0);
 
-    const result = [];
+    const parsedQuestions = [];
+    let current = null;
+    let currentOption = null;
 
-    let i = 0;
+    function saveQuestion() {
+        if (!current) return;
 
-    while (i < lines.length) {
-        const questionMatch = lines[i].match(
+        const hasAllOptions = ["A", "B", "C", "D"].every(
+            key => current.options[key] &&
+                   current.options[key].trim() !== ""
+        );
+
+        if (
+            current.question.trim() &&
+            hasAllOptions &&
+            ["A", "B", "C", "D"].includes(current.answer)
+        ) {
+            parsedQuestions.push({
+                question: current.question.trim(),
+                options: { ...current.options },
+                answer: current.answer
+            });
+        } else {
+            console.warn("Bỏ qua câu hỏi sai định dạng:", current);
+        }
+
+        current = null;
+        currentOption = null;
+    }
+
+    for (const line of lines) {
+        // Bắt đầu câu mới: Câu 1: ... hoặc Câu 1. ...
+        const questionMatch = line.match(
             /^Câu\s*(\d+)\s*[:.]\s*(.*)$/i
         );
 
-        if (!questionMatch) {
-            i++;
+        if (questionMatch) {
+            saveQuestion();
+
+            current = {
+                number: Number(questionMatch[1]),
+                question: questionMatch[2] || "",
+                options: {
+                    A: "",
+                    B: "",
+                    C: "",
+                    D: ""
+                },
+                answer: ""
+            };
+
+            currentOption = null;
             continue;
         }
 
-        const number = Number(questionMatch[1]);
-        let questionText = questionMatch[2].trim();
+        if (!current) continue;
 
-        const options = {};
-        let answer = "";
-
-        i++;
-
-        while (
-            i < lines.length &&
-            !/^Đáp\s*án\s*:/i.test(lines[i]) &&
-            !/^Câu\s*\d+\s*[:.]/i.test(lines[i])
-        ) {
-            const optionMatch = lines[i].match(
-                /^([ABCD])\s*[.):]\s*(.*)$/i
-            );
-
-            if (optionMatch) {
-                const letter = optionMatch[1].toUpperCase();
-                options[letter] = optionMatch[2].trim();
-            } else if (Object.keys(options).length === 0) {
-                // Cho phép nội dung câu hỏi xuống dòng
-                questionText += " " + lines[i];
-            } else {
-                // Cho phép nội dung phương án xuống dòng
-                const previousLetter = Object.keys(options).pop();
-                options[previousLetter] += " " + lines[i];
-            }
-
-            i++;
-        }
-
-        if (
-            i < lines.length &&
-            /^Đáp\s*án\s*:/i.test(lines[i])
-        ) {
-            const answerMatch = lines[i].match(
-                /^Đáp\s*án\s*:\s*([ABCD])\b/i
-            );
-
-            if (answerMatch) {
-                answer = answerMatch[1].toUpperCase();
-            }
-
-            i++;
-        }
-
-        // Chỉ nhận câu có đủ A, B, C, D và đáp án hợp lệ
-        if (
-            ["A", "B", "C", "D"].every(
-                letter => options[letter] !== undefined
-            ) &&
-            ["A", "B", "C", "D"].includes(answer)
-        ) {
-            result.push({
-                number,
-                question: questionText,
-                options,
-                answer
-            });
-        }
-    }
-
-    return result;
-}
-
-
-// ================================
-// HIỂN THỊ CÂU HỎI
-// ================================
-
-function renderQuiz() {
-    quiz.innerHTML = "";
-    resultSection.style.display = "none";
-    submitButton.style.display = "";
-    submitted = false;
-
-    questions.forEach((question, index) => {
-        const card = document.createElement("div");
-        card.className = "question-card";
-
-        const title = document.createElement("h3");
-        title.className = "question-title";
-        title.textContent =
-            `Câu ${question.number}: ${question.question}`;
-
-        card.appendChild(title);
-
-        const answerList = document.createElement("div");
-        answerList.className = "answer-list";
-
-        ["A", "B", "C", "D"].forEach(letter => {
-            const label = document.createElement("label");
-            label.className = "answer-option";
-
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.name = `question-${index}`;
-            input.value = letter;
-
-            const letterBox = document.createElement("span");
-            letterBox.className = "answer-letter";
-            letterBox.textContent = letter;
-
-            const text = document.createElement("span");
-            text.className = "answer-text";
-            text.textContent = question.options[letter];
-
-            label.appendChild(input);
-            label.appendChild(letterBox);
-            label.appendChild(text);
-
-            answerList.appendChild(label);
-        });
-
-        card.appendChild(answerList);
-        quiz.appendChild(card);
-    });
-}
-
-
-// ================================
-// NỘP BÀI VÀ CHẤM ĐIỂM
-// ================================
-
-submitButton.addEventListener("click", submitQuiz);
-
-function submitQuiz() {
-    if (submitted) return;
-
-    let score = 0;
-    const wrong = [];
-
-    questions.forEach((question, index) => {
-        const selected = document.querySelector(
-            `input[name="question-${index}"]:checked`
+        // Đáp án: A
+        const answerMatch = line.match(
+            /^Đáp\s*án\s*:\s*([ABCD])\s*$/i
         );
 
-        const userAnswer = selected ? selected.value : "";
-
-        if (userAnswer === question.answer) {
-            score++;
-        } else {
-            wrong.push({
-                question,
-                userAnswer
-            });
+        if (answerMatch) {
+            current.answer = answerMatch[1].toUpperCase();
+            currentOption = null;
+            continue;
         }
-    });
 
-    submitted = true;
+        // Phương án A. ... / A) ... / A: ...
+        const optionMatch = line.match(
+            /^([ABCD])\s*[.):]\s*(.*)$/i
+        );
 
-    document.querySelectorAll("#quiz input").forEach(input => {
-        input.disabled = true;
-    });
+        if (optionMatch) {
+            currentOption = optionMatch[1].toUpperCase();
+            current.options[currentOption] = optionMatch[2] || "";
+            continue;
+        }
 
-    quiz.classList.add("quiz-locked");
-    submitButton.style.display = "none";
-
-    showResult(score, wrong);
-}
-
-
-// ================================
-// HIỂN THỊ KẾT QUẢ
-// ================================
-
-function showResult(score, wrong) {
-    resultSection.style.display = "block";
-
-    scoreElement.textContent =
-        `${score} / ${questions.length} điểm`;
-
-    wrongAnswers.innerHTML = "";
-
-    if (wrong.length === 0) {
-        const message = document.createElement("div");
-        message.className = "wrong-question";
-
-        const title = document.createElement("h3");
-        title.textContent = "Tất cả câu đều đúng!";
-
-        message.appendChild(title);
-        wrongAnswers.appendChild(message);
-    } else {
-        const heading = document.createElement("h3");
-        heading.textContent = "Các câu trả lời sai";
-
-        wrongAnswers.appendChild(heading);
-
-        wrong.forEach(item => {
-            const box = document.createElement("div");
-            box.className = "wrong-question";
-
-            const title = document.createElement("h3");
-            title.textContent =
-                `Câu ${item.question.number}: ${item.question.question}`;
-
-            const userLine = document.createElement("p");
-            userLine.className = "result-line user-answer";
-
-            const userText = item.userAnswer
-                ? `${item.userAnswer}. ${item.question.options[item.userAnswer]}`
-                : "Chưa chọn";
-
-            userLine.textContent = `Bạn chọn: ${userText}`;
-
-            const correctLine = document.createElement("p");
-            correctLine.className = "result-line correct-answer";
-
-            const correct = item.question.answer;
-            correctLine.textContent =
-                `Đáp án đúng: ${correct}. ${item.question.options[correct]}`;
-
-            box.appendChild(title);
-            box.appendChild(userLine);
-            box.appendChild(correctLine);
-
-            wrongAnswers.appendChild(box);
-        });
+        // Nối những dòng bị xuống hàng trong Word
+        if (currentOption) {
+            current.options[currentOption] +=
+                (current.options[currentOption] ? " " : "") + line;
+        } else {
+            current.question +=
+                (current.question ? " " : "") + line;
+        }
     }
 
-    resultSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
+    // Lưu câu cuối cùng
+    saveQuestion();
+
+    return parsedQuestions;
 }
-
-
-// ================================
-// CHẠY CHƯƠNG TRÌNH
-// ================================
-
-loadWordFile();
-```
