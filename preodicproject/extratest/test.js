@@ -1,3 +1,4 @@
+```javascript
 // ================================
 // CẤU HÌNH
 // ================================
@@ -24,9 +25,7 @@ const wrongAnswers = document.getElementById("wrong-answers");
 // ================================
 
 async function loadWordFile() {
-
     try {
-
         quiz.innerHTML = `
             <div class="question-card loading">
                 Đang tải câu hỏi...
@@ -35,60 +34,45 @@ async function loadWordFile() {
 
         console.log("Bắt đầu tải:", WORD_FILE);
 
-        // Kiểm tra Mammoth
         if (typeof mammoth === "undefined") {
-            throw new Error(
-                "Không tìm thấy mammoth.browser.min.js"
-            );
+            throw new Error("Không tìm thấy mammoth.browser.min.js");
         }
 
-        // Đọc file Word
         const response = await fetch(WORD_FILE);
 
         if (!response.ok) {
             throw new Error(
-                `Không tìm thấy ${WORD_FILE}`
+                `Không tải được ${WORD_FILE}. Mã lỗi: ${response.status}`
             );
         }
 
         const arrayBuffer = await response.arrayBuffer();
 
-        console.log("Đã tải bai.docx");
-
-        // Chuyển Word → text
         const result = await mammoth.extractRawText({
             arrayBuffer: arrayBuffer
         });
 
-        console.log("Nội dung Word:");
-        console.log(result.value);
+        console.log("Nội dung Word:", result.value);
 
-        // Phân tích câu hỏi
         questions = parseQuestions(result.value);
 
-        console.log("Đã tìm thấy", questions.length, "câu hỏi");
+        console.log("Số câu hỏi:", questions.length);
 
         if (questions.length === 0) {
-
             quiz.innerHTML = `
                 <div class="question-card">
-                    <h3>Không tìm thấy câu hỏi</h3>
-                    <p>
-                        Kiểm tra lại định dạng trong file bai.docx.
-                    </p>
+                    <h3>Không tìm thấy câu hỏi trắc nghiệm</h3>
+                    <p>Kiểm tra định dạng trong file bai.docx.</p>
                 </div>
             `;
 
             submitButton.style.display = "none";
-
             return;
         }
 
-        // Hiển thị câu hỏi
         renderQuiz();
 
     } catch (error) {
-
         console.error("LỖI:", error);
 
         quiz.innerHTML = `
@@ -104,12 +88,18 @@ async function loadWordFile() {
 
 
 // ================================
-// PHÂN TÍCH FILE WORD
+// PHÂN TÍCH CÂU HỎI TRẮC NGHIỆM
+// Định dạng Word:
+//
+// Câu 1: Nội dung câu hỏi
+// A. Phương án A
+// B. Phương án B
+// C. Phương án C
+// D. Phương án D
+// Đáp án: A
 // ================================
 
 function parseQuestions(text) {
-
-    // Chuẩn hóa xuống dòng
     text = text
         .replace(/\u00A0/g, " ")
         .replace(/\r\n/g, "\n")
@@ -125,13 +115,8 @@ function parseQuestions(text) {
     let i = 0;
 
     while (i < lines.length) {
-
-        // ----------------------------
-        // TÌM "Câu 1:"
-        // ----------------------------
-
         const questionMatch = lines[i].match(
-            /^Câu\s*(\d+)\s*:\s*(.*)$/i
+            /^Câu\s*(\d+)\s*[:.]\s*(.*)$/i
         );
 
         if (!questionMatch) {
@@ -140,102 +125,64 @@ function parseQuestions(text) {
         }
 
         const number = Number(questionMatch[1]);
-
-        const questionText = questionMatch[2].trim();
+        let questionText = questionMatch[2].trim();
 
         const options = {};
-
-        let answerText = "";
+        let answer = "";
 
         i++;
-
-
-        // ----------------------------
-        // ĐỌC A B C D
-        // ----------------------------
 
         while (
             i < lines.length &&
             !/^Đáp\s*án\s*:/i.test(lines[i]) &&
-            !/^Câu\s*\d+\s*:/i.test(lines[i])
+            !/^Câu\s*\d+\s*[:.]/i.test(lines[i])
         ) {
-
             const optionMatch = lines[i].match(
-                /^([ABCD])\s*[.):]?\s*(.*)$/i
+                /^([ABCD])\s*[.):]\s*(.*)$/i
             );
 
             if (optionMatch) {
-
-                const letter =
-                    optionMatch[1].toUpperCase();
-
-                const optionText =
-                    optionMatch[2].trim();
-
-                options[letter] = optionText;
+                const letter = optionMatch[1].toUpperCase();
+                options[letter] = optionMatch[2].trim();
+            } else if (Object.keys(options).length === 0) {
+                // Cho phép nội dung câu hỏi xuống dòng
+                questionText += " " + lines[i];
+            } else {
+                // Cho phép nội dung phương án xuống dòng
+                const previousLetter = Object.keys(options).pop();
+                options[previousLetter] += " " + lines[i];
             }
 
             i++;
         }
 
-
-        // ----------------------------
-        // ĐỌC ĐÁP ÁN
-        // ----------------------------
-
         if (
             i < lines.length &&
             /^Đáp\s*án\s*:/i.test(lines[i])
         ) {
+            const answerMatch = lines[i].match(
+                /^Đáp\s*án\s*:\s*([ABCD])\b/i
+            );
 
-            answerText = lines[i]
-                .replace(/^Đáp\s*án\s*:/i, "")
-                .trim();
+            if (answerMatch) {
+                answer = answerMatch[1].toUpperCase();
+            }
 
             i++;
         }
 
-
-        // ----------------------------
-        // XÁC ĐỊNH ĐÚNG / SAI
-        // ----------------------------
-
-        const answerParts = answerText
-            .replace(/,/g, " ")
-            .split(/\s+/)
-            .filter(Boolean)
-            .map(value => value.toUpperCase());
-
-
-        const isTrueFalse =
-            answerParts.length === 4 &&
-            answerParts.every(
-                value => value === "Đ" || value === "S"
-            );
-
-
-        // ----------------------------
-        // LƯU CÂU HỎI
-        // ----------------------------
-
-        if (isTrueFalse) {
-
+        // Chỉ nhận câu có đủ A, B, C, D và đáp án hợp lệ
+        if (
+            ["A", "B", "C", "D"].every(
+                letter => options[letter] !== undefined
+            ) &&
+            ["A", "B", "C", "D"].includes(answer)
+        ) {
             result.push({
-                number: number,
+                number,
                 question: questionText,
-                type: "tf",
-                options: options,
-                answer: answerParts
-            });
-
-        } else {
-
-            result.push({
-                number: number,
-                question: questionText,
-                type: "abcd",
-                options: options,
-                answer: answerParts[0] || ""
+                options,
+                answer
             });
         }
     }
@@ -249,430 +196,92 @@ function parseQuestions(text) {
 // ================================
 
 function renderQuiz() {
-
     quiz.innerHTML = "";
-
     resultSection.style.display = "none";
-
+    submitButton.style.display = "";
     submitted = false;
 
-
     questions.forEach((question, index) => {
-
         const card = document.createElement("div");
-
         card.className = "question-card";
 
-
-        // ----------------------------
-        // TIÊU ĐỀ CÂU
-        // ----------------------------
-
         const title = document.createElement("h3");
-
         title.className = "question-title";
-
         title.textContent =
             `Câu ${question.number}: ${question.question}`;
 
         card.appendChild(title);
 
+        const answerList = document.createElement("div");
+        answerList.className = "answer-list";
 
-        // ============================
-        // TRẮC NGHIỆM ABCD
-        // ============================
+        ["A", "B", "C", "D"].forEach(letter => {
+            const label = document.createElement("label");
+            label.className = "answer-option";
 
-        if (question.type === "abcd") {
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = `question-${index}`;
+            input.value = letter;
 
-            const answerList =
-                document.createElement("div");
+            const letterBox = document.createElement("span");
+            letterBox.className = "answer-letter";
+            letterBox.textContent = letter;
 
-            answerList.className = "answer-list";
+            const text = document.createElement("span");
+            text.className = "answer-text";
+            text.textContent = question.options[letter];
 
+            label.appendChild(input);
+            label.appendChild(letterBox);
+            label.appendChild(text);
 
-            ["A", "B", "C", "D"].forEach(letter => {
+            answerList.appendChild(label);
+        });
 
-                if (
-                    question.options[letter] === undefined
-                ) {
-                    return;
-                }
-
-
-                const label =
-                    document.createElement("label");
-
-                label.className = "answer-option";
-
-
-                const input =
-                    document.createElement("input");
-
-                input.type = "radio";
-
-                input.name =
-                    `question-${index}`;
-
-                input.value = letter;
-
-
-                const letterBox =
-                    document.createElement("span");
-
-                letterBox.className =
-                    "answer-letter";
-
-                letterBox.textContent = letter;
-
-
-                const text =
-                    document.createElement("span");
-
-                text.className = "answer-text";
-
-                text.textContent =
-                    question.options[letter];
-
-
-                label.appendChild(input);
-
-                label.appendChild(letterBox);
-
-                label.appendChild(text);
-
-                answerList.appendChild(label);
-            });
-
-
-            card.appendChild(answerList);
-        }
-
-
-        // ============================
-        // ĐÚNG / SAI
-        // ============================
-
-        else {
-
-            const container =
-                document.createElement("div");
-
-            container.className =
-                "tf-container";
-
-
-            // HEADER
-
-            const header =
-                document.createElement("div");
-
-            header.className = "tf-row tf-header";
-
-
-            const contentTitle =
-                document.createElement("div");
-
-            contentTitle.textContent =
-                "Nội dung";
-
-
-            const trueTitle =
-                document.createElement("div");
-
-            trueTitle.textContent = "Đúng";
-
-
-            const falseTitle =
-                document.createElement("div");
-
-            falseTitle.textContent = "Sai";
-
-
-            header.appendChild(contentTitle);
-
-            header.appendChild(trueTitle);
-
-            header.appendChild(falseTitle);
-
-            container.appendChild(header);
-
-
-            // A B C D
-
-            ["A", "B", "C", "D"].forEach(letter => {
-
-                if (
-                    question.options[letter] === undefined
-                ) {
-                    return;
-                }
-
-
-                const row =
-                    document.createElement("div");
-
-                row.className = "tf-row";
-
-
-                const statement =
-                    document.createElement("div");
-
-                statement.className =
-                    "tf-statement";
-
-
-                const strong =
-                    document.createElement("strong");
-
-                strong.textContent = `${letter}.`;
-
-
-                statement.appendChild(strong);
-
-                statement.appendChild(
-                    document.createTextNode(
-                        " " + question.options[letter]
-                    )
-                );
-
-
-                row.appendChild(statement);
-
-
-                // Đúng
-
-                row.appendChild(
-                    createTFChoice(
-                        index,
-                        letter,
-                        "Đ"
-                    )
-                );
-
-
-                // Sai
-
-                row.appendChild(
-                    createTFChoice(
-                        index,
-                        letter,
-                        "S"
-                    )
-                );
-
-
-                container.appendChild(row);
-            });
-
-
-            card.appendChild(container);
-        }
-
-
+        card.appendChild(answerList);
         quiz.appendChild(card);
     });
 }
 
 
 // ================================
-// TẠO Ô ĐÚNG / SAI
+// NỘP BÀI VÀ CHẤM ĐIỂM
 // ================================
 
-function createTFChoice(
-    questionIndex,
-    letter,
-    value
-) {
-
-    const label =
-        document.createElement("label");
-
-    label.className = "tf-choice";
-
-
-    const input =
-        document.createElement("input");
-
-    input.type = "radio";
-
-    input.name =
-        `question-${questionIndex}-${letter}`;
-
-    input.value = value;
-
-
-    const circle =
-        document.createElement("span");
-
-    circle.className = "tf-radio";
-
-
-    const text =
-        document.createElement("span");
-
-    text.textContent =
-        value === "Đ"
-            ? "Đúng"
-            : "Sai";
-
-
-    label.appendChild(input);
-
-    label.appendChild(circle);
-
-    label.appendChild(text);
-
-
-    return label;
-}
-
-
-// ================================
-// NỘP BÀI
-// ================================
-
-submitButton.addEventListener(
-    "click",
-    submitQuiz
-);
-
+submitButton.addEventListener("click", submitQuiz);
 
 function submitQuiz() {
-
-    if (submitted) {
-        return;
-    }
-
+    if (submitted) return;
 
     let score = 0;
-
     const wrong = [];
 
+    questions.forEach((question, index) => {
+        const selected = document.querySelector(
+            `input[name="question-${index}"]:checked`
+        );
 
-    questions.forEach(
-        (question, index) => {
+        const userAnswer = selected ? selected.value : "";
 
-
-            // ========================
-            // ABCD
-            // ========================
-
-            if (question.type === "abcd") {
-
-                const selected =
-                    document.querySelector(
-                        `input[name="question-${index}"]:checked`
-                    );
-
-
-                const userAnswer =
-                    selected
-                        ? selected.value
-                        : "";
-
-
-                if (
-                    userAnswer === question.answer
-                ) {
-
-                    score++;
-
-                } else {
-
-                    wrong.push({
-                        question: question,
-                        userAnswer: userAnswer
-                    });
-                }
-            }
-
-
-            // ========================
-            // ĐÚNG / SAI
-            // ========================
-
-            else {
-
-                const userAnswers = [];
-
-                let allCorrect = true;
-
-
-                ["A", "B", "C", "D"].forEach(
-                    (letter, answerIndex) => {
-
-                        const selected =
-                            document.querySelector(
-                                `input[name="question-${index}-${letter}"]:checked`
-                            );
-
-
-                        const value =
-                            selected
-                                ? selected.value
-                                : "";
-
-
-                        userAnswers.push(value);
-
-
-                        if (
-                            value !==
-                            question.answer[answerIndex]
-                        ) {
-
-                            allCorrect = false;
-                        }
-                    }
-                );
-
-
-                // Cả 4 ý đúng mới được 1 điểm
-
-                if (allCorrect) {
-
-                    score++;
-
-                } else {
-
-                    wrong.push({
-                        question: question,
-                        userAnswer: userAnswers
-                    });
-                }
-            }
+        if (userAnswer === question.answer) {
+            score++;
+        } else {
+            wrong.push({
+                question,
+                userAnswer
+            });
         }
-    );
-
+    });
 
     submitted = true;
 
-
-    // ================================
-    // KHÓA TOÀN BỘ CÂU HỎI
-    // ================================
-
-    document
-        .querySelectorAll("#quiz input")
-        .forEach(input => {
-
-            input.disabled = true;
-        });
-
+    document.querySelectorAll("#quiz input").forEach(input => {
+        input.disabled = true;
+    });
 
     quiz.classList.add("quiz-locked");
-
-
-    // ================================
-    // ẨN NÚT NỘP
-    // ================================
-
     submitButton.style.display = "none";
-
-
-    // ================================
-    // HIỆN KẾT QUẢ
-    // ================================
 
     showResult(score, wrong);
 }
@@ -683,255 +292,70 @@ function submitQuiz() {
 // ================================
 
 function showResult(score, wrong) {
-
     resultSection.style.display = "block";
-
 
     scoreElement.textContent =
         `${score} / ${questions.length} điểm`;
 
-
     wrongAnswers.innerHTML = "";
 
-
-    // ----------------------------
-    // TẤT CẢ ĐÚNG
-    // ----------------------------
-
     if (wrong.length === 0) {
+        const message = document.createElement("div");
+        message.className = "wrong-question";
 
-        const message =
-            document.createElement("div");
-
-        message.className =
-            "wrong-question";
-
-
-        const title =
-            document.createElement("h3");
-
-        title.textContent =
-            "Tất cả câu đều đúng.";
-
+        const title = document.createElement("h3");
+        title.textContent = "Tất cả câu đều đúng!";
 
         message.appendChild(title);
-
         wrongAnswers.appendChild(message);
+    } else {
+        const heading = document.createElement("h3");
+        heading.textContent = "Các câu trả lời sai";
 
+        wrongAnswers.appendChild(heading);
 
-        resultSection.scrollIntoView({
-            behavior: "smooth"
-        });
+        wrong.forEach(item => {
+            const box = document.createElement("div");
+            box.className = "wrong-question";
 
-        return;
-    }
+            const title = document.createElement("h3");
+            title.textContent =
+                `Câu ${item.question.number}: ${item.question.question}`;
 
+            const userLine = document.createElement("p");
+            userLine.className = "result-line user-answer";
 
-    // ----------------------------
-    // TIÊU ĐỀ
-    // ----------------------------
+            const userText = item.userAnswer
+                ? `${item.userAnswer}. ${item.question.options[item.userAnswer]}`
+                : "Chưa chọn";
 
-    const heading =
-        document.createElement("h3");
+            userLine.textContent = `Bạn chọn: ${userText}`;
 
-    heading.textContent =
-        "Các câu trả lời sai";
+            const correctLine = document.createElement("p");
+            correctLine.className = "result-line correct-answer";
 
+            const correct = item.question.answer;
+            correctLine.textContent =
+                `Đáp án đúng: ${correct}. ${item.question.options[correct]}`;
 
-    wrongAnswers.appendChild(heading);
-
-
-    // ----------------------------
-    // TỪNG CÂU SAI
-    // ----------------------------
-
-    wrong.forEach(item => {
-
-        const box =
-            document.createElement("div");
-
-        box.className =
-            "wrong-question";
-
-
-        const title =
-            document.createElement("h3");
-
-        title.textContent =
-            `Câu ${item.question.number}: ${item.question.question}`;
-
-
-        box.appendChild(title);
-
-
-        // ========================
-        // ABCD
-        // ========================
-
-        if (
-            item.question.type === "abcd"
-        ) {
-
-            const user =
-                item.userAnswer
-                    ? item.userAnswer
-                    : "Chưa chọn";
-
-
-            const correct =
-                item.question.answer;
-
-
-            const userLine =
-                document.createElement("p");
-
-            userLine.className =
-                "result-line user-answer";
-
-            userLine.innerHTML =
-                `Bạn chọn: <strong>${user}</strong>`;
-
-
-            const correctLine =
-                document.createElement("p");
-
-            correctLine.className =
-                "result-line correct-answer";
-
-            correctLine.innerHTML =
-                `Đáp án đúng: <strong>${correct}</strong>`;
-
-
+            box.appendChild(title);
             box.appendChild(userLine);
-
             box.appendChild(correctLine);
-        }
 
-
-        // ========================
-        // ĐÚNG / SAI
-        // ========================
-
-        else {
-
-            const resultContainer =
-                document.createElement("div");
-
-            resultContainer.className =
-                "tf-result";
-
-
-            ["A", "B", "C", "D"].forEach(
-                (letter, index) => {
-
-                    const user =
-                        item.userAnswer[index]
-                            || "";
-
-
-                    const correct =
-                        item.question.answer[index];
-
-
-                    const row =
-                        document.createElement("div");
-
-                    row.className =
-                        "tf-result-row";
-
-
-                    if (user === correct) {
-
-                        row.classList.add(
-                            "correct"
-                        );
-
-                    } else {
-
-                        row.classList.add(
-                            "wrong"
-                        );
-                    }
-
-
-                    const letterBox =
-                        document.createElement("div");
-
-                    letterBox.className =
-                        "tf-result-letter";
-
-                    letterBox.textContent =
-                        letter;
-
-
-                    const userBox =
-                        document.createElement("div");
-
-                    userBox.className =
-                        "tf-result-user";
-
-                    userBox.innerHTML =
-                        `Bạn chọn: <strong>${convertTF(user)}</strong>`;
-
-
-                    const correctBox =
-                        document.createElement("div");
-
-                    correctBox.className =
-                        "tf-result-correct";
-
-                    correctBox.innerHTML =
-                        `Đáp án: <strong>${convertTF(correct)}</strong>`;
-
-
-                    row.appendChild(letterBox);
-
-                    row.appendChild(userBox);
-
-                    row.appendChild(correctBox);
-
-
-                    resultContainer.appendChild(row);
-                }
-            );
-
-
-            box.appendChild(
-                resultContainer
-            );
-        }
-
-
-        wrongAnswers.appendChild(box);
-    });
-
+            wrongAnswers.appendChild(box);
+        });
+    }
 
     resultSection.scrollIntoView({
-        behavior: "smooth"
+        behavior: "smooth",
+        block: "start"
     });
 }
 
 
 // ================================
-// ĐỔI Đ / S THÀNH CHỮ
-// ================================
-
-function convertTF(value) {
-
-    if (value === "Đ") {
-        return "Đúng";
-    }
-
-    if (value === "S") {
-        return "Sai";
-    }
-
-    return "Chưa chọn";
-}
-
-
-// ================================
-// CHẠY
+// CHẠY CHƯƠNG TRÌNH
 // ================================
 
 loadWordFile();
+```
